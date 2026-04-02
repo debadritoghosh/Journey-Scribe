@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user account information and premium status.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID from Firebase Auth." },
+        "email": { "type": "string", "format": "email", "description": "User's email address." },
+        "displayName": { "type": "string", "description": "User's display name." },
+        "photoURL": { "type": "string", "format": "uri", "description": "User's profile picture URL." },
+        "isPremium": { "type": "boolean", "description": "Whether the user has a premium subscription." },
+        "createdAt": { "type": "number", "description": "Timestamp when the profile was created." }
+      },
+      "required": ["uid", "email", "displayName", "isPremium", "createdAt"]
+    },
+    "Trip": {
+      "title": "Trip",
+      "description": "Represents a travel plan or past trip.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique trip ID." },
+        "title": { "type": "string", "description": "Title of the trip." },
+        "destination": { "type": "string", "description": "Destination city or country." },
+        "startDate": { "type": "string", "format": "date", "description": "Start date of the trip." },
+        "endDate": { "type": "string", "format": "date", "description": "End date of the trip." },
+        "description": { "type": "string", "description": "Brief description of the trip." },
+        "imageUrl": { "type": "string", "format": "uri", "description": "AI-generated or uploaded image URL." },
+        "itinerary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "day": { "type": "number" },
+              "activities": { "type": "array", "items": { "type": "string" } },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "userId": { "type": "string", "description": "ID of the user who owns this trip." },
+        "createdAt": { "type": "number", "description": "Timestamp when the trip was created." }
+      },
+      "required": ["id", "title", "destination", "startDate", "endDate", "userId", "createdAt"]
+    },
+    "JournalEntry": {
+      "title": "Journal Entry",
+      "description": "A single journal entry associated with a trip.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique entry ID." },
+        "tripId": { "type": "string", "description": "ID of the associated trip." },
+        "date": { "type": "string", "format": "date", "description": "Date of the entry." },
+        "title": { "type": "string", "description": "Title of the entry." },
+        "content": { "type": "string", "description": "Markdown content of the entry." },
+        "imageUrl": { "type": "string", "format": "uri", "description": "AI-generated or uploaded image URL." },
+        "userId": { "type": "string", "description": "ID of the user who owns this entry." },
+        "createdAt": { "type": "number", "description": "Timestamp when the entry was created." }
+      },
+      "required": ["id", "tripId", "date", "title", "content", "userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    },
+    "/trips/{tripId}": {
+      "schema": "Trip",
+      "description": "Travel plan documents."
+    },
+    "/journals/{entryId}": {
+      "schema": "JournalEntry",
+      "description": "Journal entry documents."
+    }
+  }
+}

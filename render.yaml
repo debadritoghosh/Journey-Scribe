@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: journey-scribe
+    runtime: static
+    buildCommand: npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+    # Handle client-side routing (SPA)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
