@@ -1,7 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Trip, ItineraryItem } from "../types";
 
-const apiKey = process.env.GEMINI_API_KEY;
+const getApiKey = () => {
+  try {
+    return (
+      (typeof process !== "undefined" && process.env?.GEMINI_API_KEY) ||
+      import.meta.env.VITE_GEMINI_API_KEY ||
+      ""
+    );
+  } catch {
+    return "";
+  }
+};
+
+const apiKey = getApiKey();
 if (!apiKey) {
   console.warn("GEMINI_API_KEY is not set. AI features will be disabled.");
 }
@@ -29,7 +41,7 @@ export interface GeneratedTripData {
 }
 
 export async function generateItinerary(destination: string, days: number, interests: string[], budgetLevel: string = 'Standard'): Promise<GeneratedTripData> {
-  const apiKey = process.env.GEMINI_API_KEY || "";
+  const apiKey = getApiKey();
   if (!apiKey) throw new Error("AI services are currently unavailable. Please check your connection.");
   
   const ai = new GoogleGenAI({ apiKey });
@@ -162,7 +174,7 @@ export async function generateItinerary(destination: string, days: number, inter
 }
 
 export async function adaptItinerary(trip: Trip, delayDescription: string): Promise<GeneratedTripData> {
-  const apiKey = process.env.GEMINI_API_KEY || "";
+  const apiKey = getApiKey();
   if (!apiKey) throw new Error("AI services are currently unavailable.");
   
   const ai = new GoogleGenAI({ apiKey });
@@ -266,7 +278,7 @@ export async function adaptItinerary(trip: Trip, delayDescription: string): Prom
 }
 
 export async function generateTravelImage(prompt: string): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY || "";
+  const apiKey = getApiKey();
   if (!apiKey) return "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=1200";
   
   const ai = new GoogleGenAI({ apiKey });
@@ -280,15 +292,15 @@ export async function generateTravelImage(prompt: string): Promise<string> {
     });
 
     const keyword = response.text?.trim().replace(/ /g, "-") || prompt.replace(/ /g, "-");
-    return `https://source.unsplash.com/featured/1600x900?${keyword},travel,authentic,candid`;
+    return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200&q=${keyword}`;
   } catch (error) {
     console.error("Error generating image keyword:", error);
-    return `https://source.unsplash.com/featured/1600x900?${prompt.replace(/ /g, "-")},travel`;
+    return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200&q=${prompt.replace(/ /g, "-")}`;
   }
 }
 
 export async function generateJournalPrompt(trip: Trip): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY || "";
+  const apiKey = getApiKey();
   if (!apiKey) return "What was the highlight of your day?";
   
   const ai = new GoogleGenAI({ apiKey });

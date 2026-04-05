@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Plus, Sparkles, Compass, Map, BookOpen, LogIn, User, Loader2 } from "lucide-react";
-import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, db, collection, query, where, onSnapshot, setDoc, doc, deleteDoc, User as FirebaseUser } from "./firebase";
+import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, db, collection, query, where, onSnapshot, setDoc, doc, deleteDoc, getDoc, User as FirebaseUser } from "./firebase";
 import { Trip, JournalEntry, UserProfile } from "./types";
 import Navigation from "./components/Navigation";
 import Hero from "./components/Hero";
@@ -69,30 +69,25 @@ export default function App() {
       setUser(firebaseUser);
       if (firebaseUser) {
         // Fetch or create user profile
-        const userDoc = await doc(db, 'users', firebaseUser.uid);
-        const userSnap = await (async () => {
-          try {
-            const snap = await (await import('firebase/firestore')).getDoc(userDoc);
-            return snap;
-          } catch (e) {
-            console.error("Error fetching user profile:", e);
-            return null;
+        const userDoc = doc(db, 'users', firebaseUser.uid);
+        try {
+          const userSnap = await getDoc(userDoc);
+          if (userSnap.exists()) {
+            setUserProfile(userSnap.data() as UserProfile);
+          } else {
+            const newProfile: UserProfile = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || "",
+              displayName: firebaseUser.displayName || "Explorer",
+              photoURL: firebaseUser.photoURL || undefined,
+              isPremium: false,
+              createdAt: Date.now(),
+            };
+            await setDoc(userDoc, newProfile);
+            setUserProfile(newProfile);
           }
-        })();
-
-        if (userSnap && userSnap.exists()) {
-          setUserProfile(userSnap.data() as UserProfile);
-        } else {
-          const newProfile: UserProfile = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || "",
-            displayName: firebaseUser.displayName || "Explorer",
-            photoURL: firebaseUser.photoURL || undefined,
-            isPremium: false,
-            createdAt: Date.now(),
-          };
-          await setDoc(userDoc, newProfile);
-          setUserProfile(newProfile);
+        } catch (e) {
+          console.error("Error fetching user profile:", e);
         }
       } else {
         setUserProfile(null);
