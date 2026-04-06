@@ -123,7 +123,7 @@ export default function TripCard({ trip, onClick, onDelete, onEdit }: TripCardPr
       <div className="p-6 space-y-4 flex flex-col flex-grow">
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xl font-serif font-medium leading-tight group-hover:text-brand-primary transition-colors line-clamp-1">
+            <h3 className="text-xl font-serif font-medium leading-tight group-hover:text-brand-primary transition-colors line-clamp-1 text-brand-text">
               {trip.title}
             </h3>
             {trip.stressScore !== undefined && (
@@ -141,24 +141,24 @@ export default function TripCard({ trip, onClick, onDelete, onEdit }: TripCardPr
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2 text-xs text-brand-cream/50 font-medium">
+          <div className="flex items-center gap-2 text-xs text-brand-muted font-medium">
             <Calendar className="w-3 h-3" />
             <span>{format(new Date(trip.startDate), "MMM d")} - {format(new Date(trip.endDate), "MMM d, yyyy")}</span>
           </div>
         </div>
 
-        <p className="text-sm text-brand-cream/60 line-clamp-2 leading-relaxed flex-grow">
+        <p className="text-sm text-brand-muted line-clamp-2 leading-relaxed flex-grow">
           {trip.description}
         </p>
 
-        <div className="pt-4 border-t border-white/5 space-y-3">
+        <div className="pt-4 border-t border-brand-border space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-brand-primary">
               <IndianRupee className="w-3.5 h-3.5" />
               <span className="text-sm font-bold">{trip.totalEstimatedPrice?.toLocaleString() || 0}</span>
-              <span className="text-[10px] text-brand-cream/40 font-medium uppercase tracking-widest ml-1">({trip.budgetLevel})</span>
+              <span className="text-[10px] text-brand-muted font-medium uppercase tracking-widest ml-1">({trip.budgetLevel})</span>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-cream/40">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">
               {trip.itinerary?.length || 0} Days
             </span>
           </div>

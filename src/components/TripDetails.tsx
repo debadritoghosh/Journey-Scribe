@@ -147,7 +147,7 @@ export default function TripDetails({ trip, onBack, onAddJournal, onUpdateTrip }
                 <RefreshCw className={cn("w-5 h-5", isAdapting && "animate-spin")} />
                 <h3 className="text-lg font-serif">Plan Adaptation</h3>
               </div>
-              <p className="text-sm text-brand-cream/60">Describe the delay (e.g., "Flight delayed by 4 hours", "Missed the morning train"). The Efficiency Architect will refine your remaining itinerary.</p>
+              <p className="text-sm text-brand-muted">Describe the delay (e.g., "Flight delayed by 4 hours", "Missed the morning train"). Our AI will refine your remaining itinerary.</p>
               <div className="flex gap-3">
                 <input
                   type="text"
@@ -171,17 +171,17 @@ export default function TripDetails({ trip, onBack, onAddJournal, onUpdateTrip }
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-12">
-          {/* Efficiency Report & Stress Score */}
-          {(trip.stressScore !== undefined || trip.efficiencyReport) && (
+          {/* AI Analysis & Stress Score */}
+          {(trip.stressScore !== undefined || trip.aiAnalysis) && (
             <section className="glass-card p-6 md:p-8 border-l-4 border-brand-primary space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-brand-primary">
                   <Zap className="w-6 h-6" />
-                  <h2 className="text-2xl font-serif">Efficiency Architect Report</h2>
+                  <h2 className="text-2xl font-serif">Professional AI Analysis</h2>
                 </div>
                 {trip.stressScore !== undefined && (
                   <div className="text-right">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-brand-cream/40">Itinerary Stress Score</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-brand-muted">Itinerary Stress Score</p>
                     <p className={cn(
                       "text-3xl font-serif",
                       trip.stressScore < 30 ? "text-green-400" : trip.stressScore < 60 ? "text-yellow-400" : "text-red-400"
@@ -191,12 +191,12 @@ export default function TripDetails({ trip, onBack, onAddJournal, onUpdateTrip }
                   </div>
                 )}
               </div>
-              <p className="text-brand-cream/80 leading-relaxed italic">
-                "{trip.efficiencyReport}"
+              <p className="text-brand-text leading-relaxed italic">
+                "{trip.aiAnalysis}"
               </p>
-              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-cream/20">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-muted">
                 <ShieldCheck className="w-3 h-3" />
-                Verified via 1,000 Monte Carlo Simulations
+                Verified via Professional Travel Simulations
               </div>
             </section>
           )}
@@ -293,9 +293,9 @@ export default function TripDetails({ trip, onBack, onAddJournal, onUpdateTrip }
                             </div>
                           </div>
                           {activity.transitNote && (
-                            <div className="ml-4 md:ml-40 flex items-center gap-2 text-xs text-brand-cream/40 bg-white/5 p-3 rounded-xl border border-white/5">
+                            <div className="ml-4 md:ml-40 flex items-center gap-2 text-xs text-brand-muted bg-brand-surface/50 p-3 rounded-xl border border-brand-border">
                               <Zap className="w-3 h-3 text-brand-primary" />
-                              <span className="font-medium text-brand-primary uppercase tracking-widest text-[10px]">Snack Path:</span>
+                              <span className="font-medium text-brand-primary uppercase tracking-widest text-[10px]">Transit Note:</span>
                               <span className="italic">{activity.transitNote}</span>
                             </div>
                           )}

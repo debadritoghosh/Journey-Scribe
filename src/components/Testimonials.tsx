@@ -26,8 +26,8 @@ export default function Testimonials() {
   return (
     <section className="py-24 space-y-16">
       <div className="text-center space-y-4">
-        <h2 className="text-4xl md:text-5xl font-serif">Loved by Explorers</h2>
-        <p className="text-brand-cream/60 max-w-xl mx-auto font-light">
+        <h2 className="text-4xl md:text-5xl font-serif text-brand-text">Loved by Explorers</h2>
+        <p className="text-brand-muted max-w-xl mx-auto font-light">
           Join thousands of travelers who are redefining their journeys with AI.
         </p>
       </div>
@@ -50,11 +50,11 @@ export default function Testimonials() {
               ))}
             </div>
 
-            <p className="text-brand-cream/80 leading-relaxed italic font-light">
+            <p className="text-brand-text leading-relaxed italic font-light">
               "{testimonial.content}"
             </p>
 
-            <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+            <div className="flex items-center gap-4 pt-4 border-t border-brand-border">
               <img 
                 src={testimonial.avatar} 
                 alt={testimonial.name} 
@@ -62,8 +62,8 @@ export default function Testimonials() {
                 referrerPolicy="no-referrer"
               />
               <div>
-                <h4 className="font-serif text-brand-cream">{testimonial.name}</h4>
-                <p className="text-[10px] uppercase tracking-widest text-brand-cream/40">{testimonial.role}</p>
+                <h4 className="font-serif text-brand-text">{testimonial.name}</h4>
+                <p className="text-[10px] uppercase tracking-widest text-brand-muted">{testimonial.role}</p>
               </div>
             </div>
           </motion.div>

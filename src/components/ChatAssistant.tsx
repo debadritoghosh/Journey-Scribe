@@ -37,14 +37,27 @@ export default function ChatAssistant() {
 
     try {
       const chat = ai.chats.create({
-        model: "gemini-3-flash-preview",
+        model: "gemini-3.1-flash-lite-preview",
         config: {
           systemInstruction: "You are a helpful and inspiring travel assistant for Journey Scribe. Help users plan trips, suggest destinations, and answer travel-related questions. Keep your responses concise and engaging.",
         },
       });
 
-      const response = await chat.sendMessage({ message: userMessage });
-      setMessages(prev => [...prev, { role: 'model', text: response.text || "I'm sorry, I couldn't process that." }]);
+      const streamResponse = await chat.sendMessageStream({ message: userMessage });
+      
+      // Add an empty model message that we'll update with the stream
+      setMessages(prev => [...prev, { role: 'model', text: "" }]);
+      
+      let fullText = "";
+      for await (const chunk of streamResponse) {
+        const chunkText = chunk.text || "";
+        fullText += chunkText;
+        setMessages(prev => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1] = { role: 'model', text: fullText };
+          return newMessages;
+        });
+      }
     } catch (error) {
       console.error("Chat error:", error);
       setMessages(prev => [...prev, { role: 'model', text: "Sorry, I'm having trouble connecting right now. Please try again later." }]);
@@ -70,12 +83,12 @@ export default function ChatAssistant() {
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed bottom-24 right-8 z-50 w-full max-w-[380px] h-[500px] glass-card flex flex-col shadow-2xl overflow-hidden"
           >
-            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+            <div className="p-4 border-b border-brand-border flex items-center justify-between bg-brand-surface/50">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-brand-primary" />
-                <span className="font-serif font-medium">Travel Assistant</span>
+                <span className="font-serif font-medium text-brand-text">Professional AI Consultant</span>
               </div>
-              <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+              <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-brand-surface/80 rounded-full transition-colors text-brand-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -85,13 +98,13 @@ export default function ChatAssistant() {
                 <div key={i} className={cn("flex gap-3", msg.role === 'user' ? "flex-row-reverse" : "flex-row")}>
                   <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-                    msg.role === 'user' ? "bg-brand-primary/20" : "bg-white/10"
+                    msg.role === 'user' ? "bg-brand-primary/20" : "bg-brand-surface border border-brand-border"
                   )}>
                     {msg.role === 'user' ? <User className="w-4 h-4 text-brand-primary" /> : <Sparkles className="w-4 h-4 text-brand-primary" />}
                   </div>
                   <div className={cn(
                     "p-3 rounded-2xl text-sm leading-relaxed",
-                    msg.role === 'user' ? "bg-brand-primary text-brand-dark rounded-tr-none" : "bg-white/5 text-brand-cream/80 rounded-tl-none border border-white/10"
+                    msg.role === 'user' ? "bg-brand-primary text-brand-dark rounded-tr-none" : "bg-brand-surface text-brand-text rounded-tl-none border border-brand-border"
                   )}>
                     {msg.text}
                   </div>
@@ -99,10 +112,10 @@ export default function ChatAssistant() {
               ))}
               {isLoading && (
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-brand-surface border border-brand-border flex items-center justify-center">
                     <Loader2 className="w-4 h-4 text-brand-primary animate-spin" />
                   </div>
-                  <div className="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10">
+                  <div className="bg-brand-surface p-3 rounded-2xl rounded-tl-none border border-brand-border">
                     <div className="flex gap-1">
                       <div className="w-1.5 h-1.5 bg-brand-primary/40 rounded-full animate-bounce" />
                       <div className="w-1.5 h-1.5 bg-brand-primary/40 rounded-full animate-bounce [animation-delay:0.2s]" />
@@ -113,7 +126,7 @@ export default function ChatAssistant() {
               )}
             </div>
 
-            <div className="p-4 border-t border-white/10 bg-white/5">
+            <div className="p-4 border-t border-brand-border bg-brand-surface/50">
               <div className="relative">
                 <input
                   type="text"
@@ -121,7 +134,7 @@ export default function ChatAssistant() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                   placeholder="Ask me anything..."
-                  className="w-full bg-brand-dark/50 border border-white/10 rounded-full pl-4 pr-12 py-2.5 text-sm focus:outline-none focus:border-brand-primary transition-colors"
+                  className="w-full bg-brand-surface border border-brand-border rounded-full pl-4 pr-12 py-2.5 text-sm focus:outline-none focus:border-brand-primary transition-colors text-brand-text placeholder:text-brand-muted/50"
                 />
                 <button
                   onClick={handleSend}

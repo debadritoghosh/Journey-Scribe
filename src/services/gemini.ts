@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 import { Trip, ItineraryItem } from "../types";
 
 const getApiKey = () => {
@@ -33,6 +33,7 @@ export interface GeneratedTripData {
     condition: string;
     description: string;
   };
+  aiAnalysis?: string;
   uniqueInsights?: {
     photographySpots: string[];
     culturalEtiquette: string[];
@@ -46,11 +47,11 @@ export async function generateItinerary(destination: string, days: number, inter
   
   const ai = new GoogleGenAI({ apiKey });
 
-  const prompt = `Act as "The Efficiency Architect" and create a detailed ${days}-day travel itinerary for ${destination}. 
+  const prompt = `Act as a "Professional Travel Consultant" and create a detailed ${days}-day travel itinerary for ${destination}. 
   Budget Level: ${budgetLevel}.
   Interests: ${interests.join(", ")}. 
   
-  Focus strictly on minimizing "dead time" and transit logic. Prioritize "snack paths" (efficient routes with quick food stops) between attractions.
+  Focus on creating a balanced, high-quality experience. Ensure transit routes are logical and efficient.
   
   For each activity, provide:
   - Specific name
@@ -60,7 +61,7 @@ export async function generateItinerary(destination: string, days: number, inter
   - A direct ticket booking URL if available online
   - imageUrl: ALWAYS use "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=400" (a professional travel flat lay with bag, camera, and pencil).
   - riskLevel: A number from 0 to 1 representing the probability of delay (e.g., 0.1 for low risk, 0.5 for high traffic/weather risk)
-  - transitNote: A short note about the "snack path" or transit efficiency to the next spot.
+  - transitNote: A short note about the transit efficiency to the next spot.
   
   Also provide:
   - Total estimated price for the entire trip in Indian Rupees (₹). 
@@ -76,12 +77,13 @@ export async function generateItinerary(destination: string, days: number, inter
     - shopping (estimated daily shopping budget)
   - A suggested transport booking URL
   - weatherForecast: Expected average temperature, condition (e.g. "Sunny", "Rainy"), and a brief description for the current season in ${destination}.
+  - aiAnalysis: A professional summary of why this itinerary is well-balanced and optimized for the traveler's interests and budget.
   - Unique Insights:
     - Best Photography Spots (3-5 spots)
     - Cultural Etiquette (3-5 tips)
     - Local Secrets (3-5 hidden gems)
   
-  Return the response as a JSON object with 'itinerary', 'totalEstimatedPrice', 'budgetBreakdown', 'bookingUrl', 'weatherForecast', and 'uniqueInsights'.
+  Return the response as a JSON object with 'itinerary', 'totalEstimatedPrice', 'budgetBreakdown', 'bookingUrl', 'weatherForecast', 'aiAnalysis', and 'uniqueInsights'.
   Each itinerary object should have 'day', 'activities' (array with 'name', 'time', 'price', 'locationUrl', 'ticketUrl', 'imageUrl', 'riskLevel', 'transitNote'), and 'notes'.`;
 
   try {
@@ -89,6 +91,7 @@ export async function generateItinerary(destination: string, days: number, inter
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -142,6 +145,7 @@ export async function generateItinerary(destination: string, days: number, inter
               },
               required: ["temp", "condition", "description"]
             },
+            aiAnalysis: { type: Type.STRING },
             uniqueInsights: {
               type: Type.OBJECT,
               properties: {
@@ -179,7 +183,7 @@ export async function adaptItinerary(trip: Trip, delayDescription: string): Prom
   
   const ai = new GoogleGenAI({ apiKey });
 
-  const prompt = `Act as "The Efficiency Architect". A traveler is experiencing a delay during their trip to ${trip.destination}.
+  const prompt = `Act as a "Professional Travel Consultant". A traveler is experiencing a delay during their trip to ${trip.destination}.
   Delay Description: "${delayDescription}".
   
   Current Trip Context:
@@ -192,14 +196,16 @@ export async function adaptItinerary(trip: Trip, delayDescription: string): Prom
   2. Refine the plan to recover lost time or adjust activities intelligently.
   3. Prioritize high-value activities while maintaining transit efficiency.
   4. Recalculate the budget if necessary.
+  5. Provide a professional analysis of the adjustments made.
   
-  Return a complete, updated trip data object in the same JSON format as the original itinerary generation, including 'itinerary', 'totalEstimatedPrice', 'budgetBreakdown', 'bookingUrl', 'weatherForecast', and 'uniqueInsights'.`;
+  Return a complete, updated trip data object in the same JSON format as the original itinerary generation, including 'itinerary', 'totalEstimatedPrice', 'budgetBreakdown', 'bookingUrl', 'weatherForecast', 'aiAnalysis', and 'uniqueInsights'.`;
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
         responseMimeType: "application/json",
         // Reuse the same schema as generateItinerary
         responseSchema: {
@@ -254,6 +260,7 @@ export async function adaptItinerary(trip: Trip, delayDescription: string): Prom
               },
               required: ["temp", "condition", "description"]
             },
+            aiAnalysis: { type: Type.STRING },
             uniqueInsights: {
               type: Type.OBJECT,
               properties: {
@@ -285,7 +292,7 @@ export async function generateTravelImage(prompt: string): Promise<string> {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3.1-flash-lite-preview",
       contents: `Generate a single, highly specific Unsplash search keyword for a raw, authentic, professional travel photograph of ${prompt}. 
       The keyword should focus on realism, candid moments, and the specific atmosphere of the location. 
       Avoid generic terms. Return ONLY the keyword, no other text.`,
@@ -310,7 +317,7 @@ export async function generateJournalPrompt(trip: Trip): Promise<string> {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3.1-flash-lite-preview",
       contents: prompt,
     });
 

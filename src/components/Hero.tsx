@@ -26,18 +26,18 @@ export default function Hero({ onStartPlanning }: HeroProps) {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="space-y-10"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-brand-primary text-xs font-semibold tracking-widest uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 backdrop-blur-md text-brand-primary text-xs font-semibold tracking-widest uppercase">
             <Sparkles className="w-3.5 h-3.5" />
-            AI-Powered Travel Companion
+            Professional AI Travel Consultant
           </div>
 
-          <h1 className="text-5xl md:text-8xl font-serif font-light leading-[1.1] tracking-tight">
-            Every Journey <br />
-            <span className="italic font-normal text-gradient">Deserves a Scribe</span>
+          <h1 className="text-5xl md:text-8xl font-serif font-light leading-[1.1] tracking-tight text-brand-text">
+            Your Journey, <br />
+            <span className="italic font-normal text-gradient">Perfectly Crafted.</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-brand-cream/70 font-light leading-relaxed">
-            Plan extraordinary adventures and preserve your most cherished memories with AI-generated itineraries and cinematic journaling.
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-brand-muted font-light leading-relaxed">
+            Experience the future of travel with our professional AI consultant. We design high-value, efficient itineraries tailored to your unique interests.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">

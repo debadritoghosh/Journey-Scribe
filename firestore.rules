@@ -1,52 +1,61 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: {uid}
+// Fields:
+//   - uid: string (required) - Unique user ID
+//   - email: string (required, format: email) - User email address
+//   - displayName: string (required) - User display name
+//   - photoURL: string (optional, format: uri) - User profile photo URL
+//   - isPremium: boolean (required) - Whether the user has a premium subscription
+//   - createdAt: int (required) - Timestamp of profile creation
+//
+// Collection: trips
+// Document ID: {tripId}
+// Fields:
+//   - id: string (required) - Unique trip ID
+//   - userId: string (required) - User ID who owns the trip
+//   - title: string (required) - Trip title
+//   - destination: string (required) - Trip destination
+//   - startDate: string (required, format: date-time) - Trip start date
+//   - endDate: string (required, format: date-time) - Trip end date
+//   - description: string (optional) - Trip description
+//   - imageUrl: string (optional, format: uri) - Trip cover image URL
+//   - budgetLevel: string (optional, enum: ["Economy", "Standard", "Luxury"]) - Budget level
+//   - totalEstimatedPrice: number (optional) - Total estimated price
+//   - createdAt: int (required) - Timestamp of trip creation
+//   - itinerary: array (optional) - List of itinerary items
+//   - aiAnalysis: string (optional) - Professional AI analysis of the trip
+//   - stressScore: number (optional) - Calculated stress score
+//   - weatherForecast: map (optional) - Weather forecast data
+//   - budgetBreakdown: map (optional) - Budget breakdown data
+//   - uniqueInsights: map (optional) - Unique travel insights
+//   - bookingUrl: string (optional, format: uri) - Booking URL
+//
+// Collection: journals
+// Document ID: {journalId}
+// Fields:
+//   - id: string (required) - Unique journal entry ID
+//   - tripId: string (required) - ID of the trip this entry belongs to
+//   - userId: string (required) - User ID who owns the entry
+//   - date: string (required, format: date-time) - Date of the entry
+//   - title: string (required) - Entry title
+//   - content: string (required) - Entry content
+//   - imageUrl: string (optional, format: uri) - Entry image URL
+//   - createdAt: int (required) - Timestamp of entry creation
+//
+// ===============================================================
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: users
-    // Document ID: {uid}
-    // Fields:
-    //   - uid: string (required) - Unique user ID
-    //   - email: string (required, email format) - User's email
-    //   - displayName: string (required) - User's display name
-    //   - photoURL: string (optional, uri format) - User's profile picture
-    //   - isPremium: bool (required) - Premium status
-    //   - createdAt: number (required) - Creation timestamp
-    //
-    // Collection: trips
-    // Document ID: {tripId}
-    // Fields:
-    //   - id: string (required) - Unique trip ID
-    //   - title: string (required, max 100 chars) - Trip title
-    //   - destination: string (required, max 100 chars) - Trip destination
-    //   - startDate: string (required, date format) - Start date
-    //   - endDate: string (required, date format) - End date
-    //   - description: string (optional, max 1000 chars) - Trip description
-    //   - imageUrl: string (optional, uri format) - AI-generated image
-    //   - itinerary: list (optional, max 30 items) - Day-by-day plan
-    //   - userId: string (required) - Owner's UID
-    //   - createdAt: number (required) - Creation timestamp
-    //
-    // Collection: journals
-    // Document ID: {entryId}
-    // Fields:
-    //   - id: string (required) - Unique entry ID
-    //   - tripId: string (required) - Associated trip ID
-    //   - date: string (required, date format) - Entry date
-    //   - title: string (required, max 100 chars) - Entry title
-    //   - content: string (required, max 5000 chars) - Markdown content
-    //   - imageUrl: string (optional, uri format) - AI-generated image
-    //   - userId: string (required) - Owner's UID
-    //   - createdAt: number (required) - Creation timestamp
-    //
-    // ===============================================================
 
     // ===============================================================
     // Helper Functions
     // ===============================================================
-    
+
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -57,6 +66,10 @@ service cloud.firestore {
 
     function isDocOwner() {
       return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isRequestOwner() {
+      return isAuthenticated() && request.auth.uid == request.resource.data.userId;
     }
 
     function isValidEmail(email) {
@@ -71,8 +84,8 @@ service cloud.firestore {
       return request.resource.data.keys().hasOnly(fields);
     }
 
-    function areImmutableFieldsUnchanged(fields) {
-      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
     }
 
     // ===============================================================
@@ -80,57 +93,63 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidUser(data) {
-      return data.uid is string && data.uid == request.auth.uid &&
+      return hasRequiredFields(['uid', 'email', 'displayName', 'isPremium', 'createdAt']) &&
+             hasOnlyAllowedFields(['uid', 'email', 'displayName', 'photoURL', 'isPremium', 'createdAt']) &&
+             data.uid == request.auth.uid &&
              data.email is string && isValidEmail(data.email) &&
              data.displayName is string && data.displayName.size() > 0 && data.displayName.size() < 100 &&
              data.isPremium is bool &&
-             data.createdAt is number;
+             data.createdAt is int;
     }
 
     function isValidTrip(data) {
-      return data.id is string &&
-             data.title is string && data.title.size() > 0 && data.title.size() <= 100 &&
-             data.destination is string && data.destination.size() > 0 && data.destination.size() <= 100 &&
+      return hasRequiredFields(['id', 'userId', 'title', 'destination', 'startDate', 'endDate', 'createdAt']) &&
+             hasOnlyAllowedFields(['id', 'userId', 'title', 'destination', 'startDate', 'endDate', 'description', 'imageUrl', 'budgetLevel', 'totalEstimatedPrice', 'createdAt', 'itinerary', 'aiAnalysis', 'stressScore', 'weatherForecast', 'budgetBreakdown', 'uniqueInsights', 'bookingUrl']) &&
+             data.id is string &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.destination is string && data.destination.size() > 0 && data.destination.size() < 200 &&
              data.startDate is string &&
              data.endDate is string &&
-             (!('description' in data) || (data.description is string && data.description.size() <= 1000)) &&
-             (!('imageUrl' in data) || isValidUrl(data.imageUrl)) &&
-             data.userId is string && data.userId == request.auth.uid &&
-             data.createdAt is number;
+             data.createdAt is int;
     }
 
-    function isValidJournalEntry(data) {
-      return data.id is string &&
+    function isValidJournal(data) {
+      return hasRequiredFields(['id', 'tripId', 'userId', 'date', 'title', 'content', 'createdAt']) &&
+             hasOnlyAllowedFields(['id', 'tripId', 'userId', 'date', 'title', 'content', 'imageUrl', 'createdAt']) &&
+             data.id is string &&
              data.tripId is string &&
+             data.userId == request.auth.uid &&
              data.date is string &&
-             data.title is string && data.title.size() > 0 && data.title.size() <= 100 &&
-             data.content is string && data.content.size() > 0 && data.content.size() <= 5000 &&
-             (!('imageUrl' in data) || isValidUrl(data.imageUrl)) &&
-             data.userId is string && data.userId == request.auth.uid &&
-             data.createdAt is number;
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.content is string && data.content.size() > 0 && data.content.size() < 10000 &&
+             data.createdAt is int;
     }
 
     // ===============================================================
-    // Rules
+    // Collection Rules
     // ===============================================================
 
     match /users/{uid} {
       allow read: if isOwner(uid);
-      allow create: if isOwner(uid) && isValidUser(request.resource.data) && request.resource.data.isPremium == false;
-      allow update: if isOwner(uid) && isValidUser(request.resource.data) && areImmutableFieldsUnchanged(['uid', 'email', 'createdAt']);
+      allow create: if isOwner(uid) && isValidUser(request.resource.data);
+      allow update: if isOwner(uid) && isValidUser(request.resource.data) &&
+                      request.resource.data.createdAt == resource.data.createdAt;
     }
 
     match /trips/{tripId} {
       allow read: if isDocOwner();
-      allow create: if isAuthenticated() && isValidTrip(request.resource.data);
-      allow update: if isDocOwner() && isValidTrip(request.resource.data) && areImmutableFieldsUnchanged(['id', 'userId', 'createdAt']);
+      allow create: if isRequestOwner() && isValidTrip(request.resource.data);
+      allow update: if isDocOwner() && isRequestOwner() && isValidTrip(request.resource.data) &&
+                      request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isDocOwner();
     }
 
-    match /journals/{entryId} {
+    match /journals/{journalId} {
       allow read: if isDocOwner();
-      allow create: if isAuthenticated() && isValidJournalEntry(request.resource.data);
-      allow update: if isDocOwner() && isValidJournalEntry(request.resource.data) && areImmutableFieldsUnchanged(['id', 'tripId', 'userId', 'createdAt']);
+      allow create: if isRequestOwner() && isValidJournal(request.resource.data);
+      allow update: if isDocOwner() && isRequestOwner() && isValidJournal(request.resource.data) &&
+                      request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isDocOwner();
     }
   }

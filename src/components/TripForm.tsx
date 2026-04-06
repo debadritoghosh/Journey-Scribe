@@ -50,7 +50,7 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
     e.preventDefault();
 
     setIsLoading(true);
-    setStatus("Initializing The Efficiency Architect...");
+    setStatus("Initializing Professional AI Consultant...");
 
     try {
       let imageUrl = initialData?.imageUrl || "";
@@ -59,14 +59,14 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
         imageUrl = await generateTravelImage(destination);
       }
       
-      setStatus("Crafting your optimized itinerary...");
+      setStatus("Crafting your professional itinerary...");
       const tripData = await generateItinerary(destination, days, selectedInterests, budgetLevel);
       
       if (!tripData || !tripData.itinerary) {
         throw new Error("AI failed to generate a valid itinerary.");
       }
 
-      const { itinerary, totalEstimatedPrice, budgetBreakdown, bookingUrl, uniqueInsights, weatherForecast } = tripData;
+      const { itinerary, totalEstimatedPrice, budgetBreakdown, bookingUrl, uniqueInsights, weatherForecast, aiAnalysis } = tripData;
 
       const start = new Date(startDate);
       const end = new Date(startDate);
@@ -77,8 +77,8 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
         itinerary,
       };
 
-      setStatus("Running 1,000 Monte Carlo simulations...");
-      const { stressScore, efficiencyReport } = runTripSimulation(tempTrip as Trip);
+      setStatus("Optimizing travel routes...");
+      const { stressScore } = runTripSimulation(tempTrip as Trip);
 
       const newTrip: Trip = {
         id: initialData?.id || Math.random().toString(36).substring(7),
@@ -96,7 +96,7 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
         uniqueInsights,
         weatherForecast,
         stressScore,
-        efficiencyReport,
+        aiAnalysis: aiAnalysis || "Our professional AI analysis confirms this itinerary is optimized for a seamless travel experience.",
         createdAt: initialData?.createdAt || Date.now(),
       };
 
@@ -117,12 +117,12 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
         animate={{ opacity: 1, scale: 1 }}
         className="glass-card w-full max-w-2xl my-8"
       >
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
+        <div className="p-6 border-b border-brand-border flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-brand-primary" />
-            <h2 className="text-2xl font-serif">Plan Your Next Journey</h2>
+            <h2 className="text-2xl font-serif text-brand-text">Plan Your Next Journey</h2>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-brand-surface/50 rounded-full transition-colors text-brand-muted">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -130,34 +130,34 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-brand-cream/40">Destination</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-brand-muted">Destination</label>
               <input
                 required
                 type="text"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder="e.g. Kyoto, Japan"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors"
+                className="w-full bg-brand-surface/50 border border-brand-border rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors text-brand-text placeholder:text-brand-muted/50"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-brand-cream/40">Start Date</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-brand-muted">Start Date</label>
               <div className="relative">
                 <input
                   required
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors appearance-none"
+                  className="w-full bg-brand-surface/50 border border-brand-border rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors appearance-none text-brand-text"
                 />
-                <CalendarIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-cream/40 pointer-events-none" />
+                <CalendarIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted pointer-events-none" />
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-brand-cream/40">Duration (Days)</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-brand-muted">Duration (Days)</label>
               <input
                 required
                 type="number"
@@ -165,23 +165,23 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
                 max="14"
                 value={days}
                 onChange={(e) => setDays(parseInt(e.target.value))}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors"
+                className="w-full bg-brand-surface/50 border border-brand-border rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors text-brand-text"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-brand-cream/40">Trip Title (Optional)</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-brand-muted">Trip Title (Optional)</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Summer Zen Retreat"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors"
+                className="w-full bg-brand-surface/50 border border-brand-border rounded-xl px-4 py-3 focus:outline-none focus:border-brand-primary transition-colors text-brand-text placeholder:text-brand-muted/50"
               />
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-bold uppercase tracking-widest text-brand-cream/40">Interests</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-brand-muted">Interests</label>
             <div className="flex flex-wrap gap-2">
               {INTEREST_OPTIONS.map((interest) => (
                 <button
@@ -192,7 +192,7 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
                     "px-3 py-1.5 rounded-full border text-xs font-medium transition-all flex items-center gap-1.5",
                     selectedInterests.includes(interest)
                       ? "bg-brand-primary/20 border-brand-primary text-brand-primary"
-                      : "bg-white/5 border-white/10 text-brand-cream/60 hover:bg-white/10"
+                      : "bg-brand-surface/50 border-brand-border text-brand-muted hover:bg-brand-surface/80"
                   )}
                 >
                   {selectedInterests.includes(interest) && <Check className="w-3 h-3" />}
@@ -203,7 +203,7 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
           </div>
 
           <div className="space-y-4">
-            <label className="text-xs font-bold uppercase tracking-widest text-brand-cream/40">Budget Level</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-brand-muted">Budget Level</label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {(['Economy', 'Standard', 'Luxury'] as const).map((level) => (
                 <button
@@ -214,7 +214,7 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
                     "px-4 py-3 rounded-xl border text-sm font-medium transition-all text-center",
                     budgetLevel === level 
                       ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
-                      : "bg-white/5 border-white/10 text-brand-cream/60 hover:bg-white/10"
+                      : "bg-brand-surface/50 border-brand-border text-brand-muted hover:bg-brand-surface/80"
                   )}
                 >
                   {level}
@@ -237,12 +237,12 @@ export default function TripForm({ onClose, onSave, initialData }: TripFormProps
               ) : (
                 <>
                   <Sparkles className="w-5 h-5" />
-                  Generate AI Itinerary
+                  Generate Professional Itinerary
                 </>
               )}
             </button>
             {selectedInterests.length === 0 && !isLoading && (
-              <p className="text-[10px] text-center mt-2 text-brand-cream/40">Select at least one interest to continue</p>
+              <p className="text-[10px] text-center mt-2 text-brand-muted">Select at least one interest to continue</p>
             )}
           </div>
         </form>

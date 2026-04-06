@@ -10,7 +10,7 @@ const steps = [
   {
     icon: Sparkles,
     title: "AI Generation",
-    description: "Our 'Efficiency Architect' simulates thousands of routes to create your perfect, stress-free itinerary."
+    description: "Our professional AI consultant simulates thousands of routes to create your perfect, stress-free itinerary."
   },
   {
     icon: Map,
@@ -28,8 +28,8 @@ export default function HowItWorks() {
   return (
     <section className="py-24 space-y-16">
       <div className="text-center space-y-4">
-        <h2 className="text-4xl md:text-5xl font-serif">The Journey Scribe Experience</h2>
-        <p className="text-brand-cream/60 max-w-xl mx-auto font-light">
+        <h2 className="text-4xl md:text-5xl font-serif text-brand-text">The Journey Scribe Experience</h2>
+        <p className="text-brand-muted max-w-xl mx-auto font-light">
           Four simple steps to transform your travel from ordinary to extraordinary.
         </p>
       </div>
@@ -55,8 +55,8 @@ export default function HowItWorks() {
                 </div>
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-serif">{step.title}</h3>
-                <p className="text-sm text-brand-cream/60 leading-relaxed font-light">
+                <h3 className="text-xl font-serif text-brand-text">{step.title}</h3>
+                <p className="text-sm text-brand-muted leading-relaxed font-light">
                   {step.description}
                 </p>
               </div>

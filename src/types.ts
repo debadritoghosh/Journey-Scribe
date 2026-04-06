@@ -18,7 +18,7 @@ export interface Trip {
     description: string;
   };
   stressScore?: number;
-  efficiencyReport?: string;
+  aiAnalysis?: string;
   budgetBreakdown?: {
     activities: number;
     transport: number;

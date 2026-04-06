@@ -9,8 +9,8 @@ const features = [
   },
   {
     icon: Zap,
-    title: "Efficiency Architect",
-    description: "Our proprietary AI minimizes dead time and optimizes transit routes with 'snack paths' between spots."
+    title: "Professional AI Consultant",
+    description: "Our advanced AI designs high-value, efficient itineraries tailored to your unique interests."
   },
   {
     icon: RefreshCw,
@@ -25,7 +25,7 @@ const features = [
   {
     icon: ShieldCheck,
     title: "Verified Insights",
-    description: "Every itinerary is verified via 1,000 Monte Carlo simulations for maximum reliability and low stress."
+    description: "Every itinerary is verified via professional travel simulations for maximum reliability and low stress."
   },
   {
     icon: Smartphone,
@@ -38,8 +38,8 @@ export default function Features() {
   return (
     <section className="py-24 space-y-16">
       <div className="text-center space-y-4">
-        <h2 className="text-4xl md:text-5xl font-serif">Engineered for Discovery</h2>
-        <p className="text-brand-cream/60 max-w-xl mx-auto font-light">
+        <h2 className="text-4xl md:text-5xl font-serif text-brand-text">Engineered for Discovery</h2>
+        <p className="text-brand-muted max-w-xl mx-auto font-light">
           Journey Scribe combines advanced AI with deep travel insights to create the world's most sophisticated travel companion.
         </p>
       </div>
@@ -57,8 +57,8 @@ export default function Features() {
             <div className="w-12 h-12 bg-brand-primary/10 rounded-2xl flex items-center justify-center text-brand-primary group-hover:scale-110 transition-transform">
               <feature.icon className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-serif">{feature.title}</h3>
-            <p className="text-sm text-brand-cream/60 leading-relaxed font-light">
+            <h3 className="text-xl font-serif text-brand-text">{feature.title}</h3>
+            <p className="text-sm text-brand-muted leading-relaxed font-light">
               {feature.description}
             </p>
           </motion.div>

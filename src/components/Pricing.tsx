@@ -24,7 +24,7 @@ const plans = [
     features: [
       "Everything in Explorer",
       "Unlimited Cloud Sync",
-      "Efficiency Architect Reports",
+      "Professional AI Analysis",
       "Dynamic Plan Adaptation",
       "Premium Photography Spots",
       "Priority AI Support"
@@ -53,8 +53,8 @@ export default function Pricing() {
   return (
     <section className="py-24 space-y-16">
       <div className="text-center space-y-4">
-        <h2 className="text-4xl md:text-5xl font-serif">Simple, Transparent Pricing</h2>
-        <p className="text-brand-cream/60 max-w-xl mx-auto font-light">
+        <h2 className="text-4xl md:text-5xl font-serif text-brand-text">Simple, Transparent Pricing</h2>
+        <p className="text-brand-muted max-w-xl mx-auto font-light">
           Choose the plan that fits your travel style. No hidden fees, just pure discovery.
         </p>
       </div>
@@ -79,19 +79,19 @@ export default function Pricing() {
             )}
 
             <div className="space-y-2">
-              <h3 className="text-2xl font-serif">{plan.name}</h3>
+              <h3 className="text-2xl font-serif text-brand-text">{plan.name}</h3>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-brand-cream">{plan.price}</span>
-                {plan.period && <span className="text-sm text-brand-cream/40">{plan.period}</span>}
+                <span className="text-4xl font-bold text-brand-text">{plan.price}</span>
+                {plan.period && <span className="text-sm text-brand-muted">{plan.period}</span>}
               </div>
-              <p className="text-sm text-brand-cream/60 font-light leading-relaxed">
+              <p className="text-sm text-brand-muted font-light leading-relaxed">
                 {plan.description}
               </p>
             </div>
 
             <ul className="space-y-4 flex-grow">
               {plan.features.map((feature, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-sm text-brand-cream/80">
+                <li key={idx} className="flex items-start gap-3 text-sm text-brand-muted">
                   <Check className="w-4 h-4 text-brand-primary flex-shrink-0 mt-0.5" />
                   {feature}
                 </li>
@@ -102,7 +102,7 @@ export default function Pricing() {
               "w-full py-4 rounded-xl font-bold text-sm transition-all",
               plan.premium 
                 ? "bg-brand-primary text-brand-dark hover:bg-brand-primary/90 shadow-lg shadow-brand-primary/20" 
-                : "bg-white/5 text-brand-cream hover:bg-white/10 border border-white/10"
+                : "bg-brand-surface text-brand-text hover:bg-brand-surface/80 border border-brand-border"
             )}>
               {plan.buttonText}
             </button>

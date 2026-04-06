@@ -6,11 +6,14 @@
   --font-serif: "Playfair Display", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
-  --color-brand-primary: #8B5CF6; /* Vibrant Violet */
-  --color-brand-secondary: #EC4899; /* Soft Rose */
-  --color-brand-dark: #030712; /* Deep Midnight */
-  --color-brand-surface: #111827; /* Dark Surface */
-  --color-brand-cream: #F9FAFB; /* Off White */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-cream: var(--brand-cream);
+  --color-brand-text: var(--brand-text);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-border: var(--brand-border);
 
   @keyframes gradient {
     0% { background-position: 0% 50%; }
@@ -20,9 +23,31 @@
   --animate-gradient: gradient 3s ease infinite;
 }
 
+:root {
+  --brand-primary: #8B5CF6; /* Vibrant Violet */
+  --brand-secondary: #EC4899; /* Soft Rose */
+  --brand-dark: #F9FAFB; /* Off White for Light Mode */
+  --brand-surface: #FFFFFF; /* White Surface */
+  --brand-cream: #030712; /* Deep Midnight for Text in Light Mode */
+  --brand-text: #111827;
+  --brand-muted: rgba(17, 24, 39, 0.6);
+  --brand-border: rgba(17, 24, 39, 0.1);
+}
+
+.dark {
+  --brand-primary: #A78BFA;
+  --brand-secondary: #F472B6;
+  --brand-dark: #030712;
+  --brand-surface: #111827;
+  --brand-cream: #F9FAFB;
+  --brand-text: #F9FAFB;
+  --brand-muted: rgba(249, 250, 251, 0.6);
+  --brand-border: rgba(249, 250, 251, 0.1);
+}
+
 @layer base {
   body {
-    @apply bg-brand-dark text-brand-cream font-sans antialiased;
+    @apply bg-brand-dark text-brand-text font-sans antialiased transition-colors duration-300;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -31,7 +56,7 @@
 }
 
 .glass-card {
-  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl;
+  @apply bg-brand-surface/50 backdrop-blur-xl border border-brand-border rounded-3xl shadow-xl;
 }
 
 .premium-button {
@@ -43,7 +68,7 @@
 }
 
 .premium-button-secondary {
-  @apply bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:scale-105 active:scale-95;
+  @apply bg-brand-surface/50 border border-brand-border text-brand-text hover:bg-brand-surface/80 hover:scale-105 active:scale-95;
 }
 
 .text-gradient {

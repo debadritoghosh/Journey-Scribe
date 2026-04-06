@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Plus, Sparkles, Compass, Map, BookOpen, LogIn, User, Loader2 } from "lucide-react";
-import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, db, collection, query, where, onSnapshot, setDoc, doc, deleteDoc, getDoc, User as FirebaseUser } from "./firebase";
+import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, db, collection, query, where, onSnapshot, setDoc, doc, deleteDoc, getDoc, User as FirebaseUser, handleFirestoreError, OperationType } from "./firebase";
 import { Trip, JournalEntry, UserProfile } from "./types";
 import Navigation from "./components/Navigation";
 import Hero from "./components/Hero";
@@ -29,6 +29,22 @@ export default function App() {
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('js_theme') as 'light' | 'dark') || 'dark';
+    }
+    return 'dark';
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('js_theme', theme);
+  }, [theme]);
 
   const saveToLocalStorage = (key: string, data: any) => {
     try {
@@ -87,7 +103,7 @@ export default function App() {
             setUserProfile(newProfile);
           }
         } catch (e) {
-          console.error("Error fetching user profile:", e);
+          handleFirestoreError(e, OperationType.GET, 'users');
         }
       } else {
         setUserProfile(null);
@@ -114,7 +130,7 @@ export default function App() {
             },
             bookingUrl: "https://www.irctc.co.in/",
             stressScore: 12,
-            efficiencyReport: "The Efficiency Architect confirms: This itinerary is highly optimized with minimal dead time and robust transit logic.",
+            aiAnalysis: "Our professional AI analysis confirms this itinerary is optimized for a seamless travel experience, balancing high-value activities with efficient transit routes.",
             weatherForecast: {
               temp: "18°C",
               condition: "Partly Cloudy",
@@ -212,11 +228,15 @@ export default function App() {
     const unsubTrips = onSnapshot(tripsQuery, (snapshot) => {
       const tripsData = snapshot.docs.map(doc => doc.data() as Trip);
       setTrips(tripsData.sort((a, b) => b.createdAt - a.createdAt));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'trips');
     });
 
     const unsubJournals = onSnapshot(journalsQuery, (snapshot) => {
       const journalsData = snapshot.docs.map(doc => doc.data() as JournalEntry);
       setJournals(journalsData.sort((a, b) => b.createdAt - a.createdAt));
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'journals');
     });
 
     return () => {
@@ -245,7 +265,11 @@ export default function App() {
   const saveTrip = async (trip: Trip) => {
     if (user) {
       const tripWithUser = { ...trip, userId: user.uid };
-      await setDoc(doc(db, 'trips', trip.id), tripWithUser);
+      try {
+        await setDoc(doc(db, 'trips', trip.id), tripWithUser);
+      } catch (e) {
+        handleFirestoreError(e, OperationType.WRITE, `trips/${trip.id}`);
+      }
     } else {
       const existingIndex = trips.findIndex(t => t.id === trip.id);
       let newTrips;
@@ -262,7 +286,11 @@ export default function App() {
 
   const deleteTrip = async (tripId: string) => {
     if (user) {
-      await deleteDoc(doc(db, 'trips', tripId));
+      try {
+        await deleteDoc(doc(db, 'trips', tripId));
+      } catch (e) {
+        handleFirestoreError(e, OperationType.DELETE, `trips/${tripId}`);
+      }
     } else {
       const newTrips = trips.filter(t => t.id !== tripId);
       setTrips(newTrips);
@@ -273,7 +301,11 @@ export default function App() {
   const saveJournal = async (entry: JournalEntry) => {
     if (user) {
       const entryWithUser = { ...entry, userId: user.uid };
-      await setDoc(doc(db, 'journals', entry.id), entryWithUser);
+      try {
+        await setDoc(doc(db, 'journals', entry.id), entryWithUser);
+      } catch (e) {
+        handleFirestoreError(e, OperationType.WRITE, `journals/${entry.id}`);
+      }
     } else {
       const newJournals = [entry, ...journals];
       setJournals(newJournals);
@@ -283,7 +315,11 @@ export default function App() {
 
   const deleteJournal = async (entryId: string) => {
     if (user) {
-      await deleteDoc(doc(db, 'journals', entryId));
+      try {
+        await deleteDoc(doc(db, 'journals', entryId));
+      } catch (e) {
+        handleFirestoreError(e, OperationType.DELETE, `journals/${entryId}`);
+      }
     } else {
       const newJournals = journals.filter(j => j.id !== entryId);
       setJournals(newJournals);
@@ -315,6 +351,8 @@ export default function App() {
           setActiveTab(tab);
           setSelectedTrip(null);
         }}
+        theme={theme}
+        toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
       />
 
       {!navigator.onLine && (
